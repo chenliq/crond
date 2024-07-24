@@ -1,0 +1,26 @@
+app:
+  env: dev
+PHPCommand: /usr/local/bin/php
+PHPScript: /srv/www/ai/think
+crond:
+  - name: absolutePath
+    script: /srv/www/i.php
+    args:
+    type: PHPCmd
+    specTimer: '1 * * * * *'
+  - name: Test
+    script: ../test.php
+    args:
+    type: PHPCmd
+    specTimer: '10 2 0 * * *'
+  - name: i
+    script: example/i.php
+    args:
+    type: PHPCmd
+    specTimer: '10 * * * * *'
+  - name: CommonScript
+    type: CommonScript
+    interpreter: /usr/bin/sh
+    script: ./example/test.sh
+    args:
+    specTimer: '*/10 * * * * *'
