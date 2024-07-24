@@ -2,6 +2,8 @@ app:
   env: dev
 PHPCommand: /usr/local/bin/php
 PHPScript: /srv/www/ai/think
+PythonCommand: /usr/bin/python
+PythonScript:
 crond:
   - name: absolutePath
     script: /srv/www/i.php
@@ -22,5 +24,10 @@ crond:
     type: CommonScript
     interpreter: /usr/bin/sh
     script: ./example/test.sh
+    args:
+    specTimer: '*/10 * * * * *'
+  - name: PythonScript
+    type: PythonCmd
+    script: ./example/hello.py
     args:
     specTimer: '*/10 * * * * *'

@@ -15,14 +15,10 @@ type CfgData struct {
 		Env string `yaml:"env"`
 	}
 
-	Kafka struct {
-		Brokers               string `yaml:"brokers"`
-		ChatRequestDifyQueue  string `yaml:"chatRequestDifyQueue"`
-		ChatDifyResponseQueue string `yaml:"chatDifyResponseQueue"`
-	}
-
-	PHPCommand string `yaml:"PHPCommand"`
-	PHPScript  string `yaml:"PHPScript"`
+	PHPCommand    string `yaml:"PHPCommand"`
+	PHPScript     string `yaml:"PHPScript"`
+	PythonCommand string `yaml:"PythonCommand"`
+	PythonScript  string `yaml:"PythonScript"`
 
 	Crond []CrondItem
 }

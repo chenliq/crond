@@ -35,6 +35,8 @@ func RunCrond() {
 	// }
 	PHPCommand := Config.PHPCommand
 	PHPScript := Config.PHPScript
+	PythonCommand := Config.PythonCommand
+	PythonScript := Config.PythonScript
 	c := cron.New(cron.WithSeconds(), cron.WithChain(cron.SkipIfStillRunning(cron.DefaultLogger)))
 
 	var data [][]string
@@ -53,24 +55,32 @@ func RunCrond() {
 		} else {
 			scriptArgs = strings.Join(value.Args, " ")
 		}
-		if crondItem.Type == "PHPCmd" {
+		if crondItem.Type == "PHPCmd" || crondItem.Type == "PythonCmd" {
+			var command string
 			var script string
+			if crondItem.Type == "PHPCmd" {
+				command = PHPCommand
+			} else {
+				command = PythonCommand
+			}
 			if crondItem.Script != "" {
 				script = crondItem.Script
-			} else {
+			} else if crondItem.Type == "PHPCmd" {
 				script = PHPScript
+			} else {
+				script = PythonScript
 			}
 			script = parseFilePath(script)
 			PrintWithColor(script, "green")
 
 			args := append([]string{script}, crondItem.Args...)
 
-			data = append(data, []string{value.Name, value.SpecTimer, PHPCommand, script, scriptArgs})
+			data = append(data, []string{value.Name, value.SpecTimer, command, script, scriptArgs})
 
 			_, err = c.AddFunc(crondItem.SpecTimer, func() {
-				go phpCmd(PHPCommand, crondItem, args...)
+				go definedCmd(command, crondItem, args...)
 			})
-		} else if crondItem.Type == "CommonScript" {
+		} else if crondItem.Type == "elseCmd" {
 			if crondItem.Interpreter == "" || crondItem.Script == "" {
 				continue
 			}
@@ -86,7 +96,7 @@ func RunCrond() {
 			data = append(data, []string{value.Name, value.SpecTimer, command, script, scriptArgs})
 
 			_, err = c.AddFunc(crondItem.SpecTimer, func() {
-				go commonScriptCmd(command, crondItem, args...)
+				go elseCmd(command, crondItem, args...)
 			})
 		} else {
 			println("Unknown crond item type")
@@ -126,13 +136,13 @@ func RunCrond() {
 
 }
 
-func phpCmd(command string, crondItem CrondItem, args ...string) {
+func definedCmd(command string, crondItem CrondItem, args ...string) {
 	// PrintWithColor(crondItem.Type, "green")
 
 	execCommand(command, crondItem, args)
 }
 
-func commonScriptCmd(command string, crondItem CrondItem, args ...string) {
+func elseCmd(command string, crondItem CrondItem, args ...string) {
 	// PrintWithColor(crondItem.Type, "green")
 
 	execCommand(command, crondItem, args)
